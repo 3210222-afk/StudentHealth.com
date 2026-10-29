@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Health Passport · HCL Jigsaw Edition 7</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- TOP HEADER -->
+    <header class="bg-teal-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('screen1')">
+                <div class="bg-white text-teal-700 p-2 rounded-lg font-bold shadow-sm">
+                    <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Student Health Passport</h1>
+                    <p class="text-xs text-teal-200">HCL Jigsaw Edition 7 · Smart Healthcare</p>
+                </div>
+            </div>
+
+            <!-- Demo Badge -->
+            <span
+                class="bg-amber-400 text-amber-950 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> DEMO DATA ONLY
+            </span>
+        </div>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <div class="bg-white border-b border-slate-200 sticky top-[60px] z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 flex justify-around sm:justify-start sm:space-x-8 text-sm font-medium">
+            <button id="tab-screen1" onclick="switchTab('screen1')"
+                class="py-3 px-2 border-b-2 border-teal-600 text-teal-600 flex items-center gap-2 transition-all">
+                <i data-lucide="search" class="w-4 h-4"></i>
+                <span>1. Search Students</span>
+            </button>
+            <button id="tab-screen2" onclick="switchTab('screen2')"
+                class="py-3 px-2 border-b-2 border-transparent text-slate-500 hover:text-teal-600 flex items-center gap-2 transition-all">
+                <i data-lucide="id-card" class="w-4 h-4"></i>
+                <span>2. Health Card</span>
+            </button>
+            <button id="tab-screen3" onclick="switchTab('screen3')"
+                class="py-3 px-2 border-b-2 border-transparent text-slate-500 hover:text-teal-600 flex items-center gap-2 transition-all">
+                <i data-lucide="file-edit" class="w-4 h-4"></i>
+                <span>3. Nurse Update Form</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- NOTICE BANNER -->
+        <div
+            class="mb-6 bg-teal-50 border-l-4 border-teal-500 p-4 rounded-r-lg shadow-sm flex justify-between items-center text-xs sm:text-sm text-teal-900">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="info" class="w-5 h-5 text-teal-600 flex-shrink-0"></i>
+                <span><strong>Team Demo Mode:</strong> Features records for <strong>Kalash Gupta</strong>,
+                    <strong>Prudhvi Teja</strong>, <strong>Sai Harshith</strong>, and <strong>Chitraksh</strong>. All
+                    health details shown are 100% demo data.</span>
+            </div>
+            <span class="text-xs bg-teal-200 text-teal-800 px-2 py-0.5 rounded font-mono hidden sm:inline">Role: School
+                Staff</span>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: SEARCH & STUDENT LIST -->
+        <!-- ========================================== -->
+        <section id="screen1" class="space-y-6">
+            <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Student Health Directory</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">Quickly locate student emergency health records</p>
+                </div>
+
+                <!-- Search Box -->
+                <div class="relative w-full sm:w-72">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="filterStudents()"
+                        placeholder="Search name, grade, allergy..."
+                        class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+                </div>
+            </div>
+
+            <!-- Student Grid -->
+            <div id="studentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                <!-- Dynamic cards injected via JS -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: ONE-PAGE HEALTH CARD -->
+        <!-- ========================================== -->
+        <section id="screen2" class="hidden space-y-6">
+            <!-- Navigation controls -->
+            <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <button onclick="switchTab('screen1')"
+                    class="text-xs sm:text-sm text-slate-600 hover:text-teal-600 flex items-center gap-1 font-medium">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Directory
+                </button>
+                <div class="flex items-center space-x-2">
+                    <label for="studentSelector" class="text-xs text-slate-500 font-medium hidden sm:inline">Select Demo
+                        Student:</label>
+                    <select id="studentSelector" onchange="loadStudentCard(this.value)"
+                        class="text-xs sm:text-sm border border-slate-300 rounded-lg p-1.5 bg-slate-50 font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500">
+                        <!-- Options injected via JS -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Health Card Container -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden max-w-2xl mx-auto">
+                <!-- Card Header -->
+                <div class="bg-gradient-to-r from-teal-700 to-teal-800 text-white p-6 relative">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-4">
+                            <div
+                                class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-white text-xl font-bold border-2 border-white/20">
+                                <span id="cardInitials">KG</span>
+                            </div>
+                            <div>
+                                <h2 id="cardName" class="text-2xl font-bold">Kalash Gupta - Demo</h2>
+                                <p class="text-teal-100 text-sm flex items-center gap-3 mt-1">
+                                    <span>Grade: <strong id="cardGrade">6-A</strong></span>
+                                    <span>•</span>
+                                    <span>Roll: <strong id="cardRoll">12</strong></span>
+                                </p>
+                            </div>
+                        </div>
+                        <span id="cardBloodGroup"
+                            class="bg-rose-600 text-white font-extrabold px-3 py-1.5 rounded-lg text-lg shadow">
+                            O+
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 5 Key Details Body -->
+                <div class="p-6 space-y-5">
+
+                    <!-- 1. Emergency Contact -->
+                    <div class="flex items-start space-x-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="p-2.5 bg-blue-100 text-blue-600 rounded-lg">
+                            <i data-lucide="phone-call" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">1.
+                                Emergency Contact & Relation</span>
+                            <div class="flex justify-between items-center mt-1">
+                                <p id="cardEmergencyContact" class="text-base font-bold text-slate-800">+91 98765 43210
+                                    (Father - Mr. R. Gupta)</p>
+                                <a id="cardCallBtn" href="tel:9876543210"
+                                    class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium flex items-center gap-1 transition">
+                                    <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Blood Group -->
+                    <div class="flex items-start space-x-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="p-2.5 bg-rose-100 text-rose-600 rounded-lg">
+                            <i data-lucide="droplet" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">2.
+                                Verified Blood Group</span>
+                            <p id="cardBloodGroupText" class="text-base font-bold text-slate-800 mt-0.5">O Positive (O+)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Severe Allergies -->
+                    <div class="flex items-start space-x-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="p-2.5 bg-amber-100 text-amber-600 rounded-lg">
+                            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">3. Severe
+                                Allergies</span>
+                            <div id="cardAllergies" class="mt-1 flex flex-wrap gap-2">
+                                <!-- Allergy tags -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Chronic Conditions & Daily Medications -->
+                    <div class="flex items-start space-x-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="p-2.5 bg-purple-100 text-purple-600 rounded-lg">
+                            <i data-lucide="activity" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">4. Chronic
+                                Conditions & Daily Medications</span>
+                            <p id="cardConditions" class="text-base font-semibold text-slate-800 mt-0.5">Mild Asthma
+                                (Inhaler as needed)</p>
+                        </div>
+                    </div>
+
+                    <!-- 5. Special Emergency Instructions -->
+                    <div class="flex items-start space-x-3 p-3.5 bg-red-50 rounded-xl border border-red-100">
+                        <div class="p-2.5 bg-red-100 text-red-600 rounded-lg">
+                            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-red-600 uppercase tracking-wider block">5. Special
+                                Emergency Instructions / Action Plan</span>
+                            <p id="cardInstructions" class="text-sm font-medium text-slate-800 mt-1">Inhaler kept in
+                                nurse station. Notify parent immediately if breathlessness persists over 5 minutes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div
+                        class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-3">
+                        <p>Last Annual Nurse Verification: <span id="cardLastUpdated"
+                                class="font-medium text-slate-600">Aug 15, 2026</span></p>
+
+                        <button onclick="editCurrentStudent()"
+                            class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i> Nurse Annual Update
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: ANNUAL NURSE UPDATE FORM -->
+        <!-- ========================================== -->
+        <section id="screen3" class="hidden space-y-6">
+            <div class="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+
+                <div class="border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Annual Nurse Update Form</h2>
+                        <p class="text-xs text-slate-500">Authorized School Nurse Panel · Annual Checkup Update</p>
+                    </div>
+                    <span class="bg-teal-100 text-teal-800 text-xs font-semibold px-2.5 py-1 rounded-full">
+                        Authorized Nurse Mode
+                    </span>
+                </div>
+
+                <!-- Toast Feedback Banner -->
+                <div id="toastMessage"
+                    class="hidden mb-6 bg-emerald-100 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+                    <span><strong>Success!</strong> Student Health Passport card updated in real-time.</span>
+                </div>
+
+                <form id="updateForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+
+                    <!-- Select Student to Edit -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Select Student to
+                            Update</label>
+                        <select id="formStudentSelect" onchange="populateFormFields(this.value)"
+                            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-slate-50 font-semibold focus:ring-2 focus:ring-teal-500">
+                            <!-- Injected JS -->
+                        </select>
+                    </div>
+
+                    <hr class="border-slate-100">
+
+                    <!-- Field 1: Emergency Contact -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">1. Emergency Contact &
+                            Relation</label>
+                        <input type="text" id="formContact" required placeholder="+91 98765 43210 (Father)"
+                            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500">
+                    </div>
+
+                    <!-- Field 2: Blood Group -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">2. Verified Blood
+                            Group</label>
+                        <select id="formBloodGroup"
+                            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500">
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+
+                    <!-- Field 3: Severe Allergies -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">3. Severe Allergies (Comma
+                            separated or None)</label>
+                        <input type="text" id="formAllergies" placeholder="Peanuts, Penicillin, Dust"
+                            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500">
+                    </div>
+
+                    <!-- Field 4: Chronic Conditions -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">4. Chronic Conditions &
+                            Daily Medications</label>
+                        <input type="text" id="formConditions" placeholder="Asthma / Inhaler as needed"
+                            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500">
+                    </div>
+
+                    <!-- Field 5: Special Emergency Instructions -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">5. Special Emergency Action
+                            Plan / Instructions</label>
+                        <textarea id="formInstructions" rows="3"
+                            placeholder="Action steps in case of medical distress..."
+                            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4 flex gap-3">
+                        <button type="submit"
+                            class="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-bold text-sm shadow transition flex items-center justify-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Save & Update Passport
+                        </button>
+                        <button type="button" onclick="switchTab('screen2')"
+                            class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-lg font-semibold text-sm transition">
+                            Cancel
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-500">
+        <p>HCL Jigsaw Edition 7 · Grade 6 Medical Innovation & Smart Healthcare</p>
+        <p class="mt-1 text-slate-400">Created by Team: Kalash Gupta, Prudhvi Teja, Sai Harshith & Chitraksh</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Updated Demo Dataset featuring team members
+        let studentsData = [
+            {
+                id: "kalash",
+                name: "Kalash Gupta - Demo",
+                initials: "KG",
+                grade: "6-A",
+                roll: "12",
+                bloodGroup: "O+",
+                contact: "+91 98765 43210 (Father - Mr. R. Gupta)",
+                allergies: ["Peanuts", "Penicillin"],
+                conditions: "Mild Asthma (Inhaler as needed)",
+                instructions: "Inhaler kept in nurse station. Notify parent immediately if breathlessness persists over 5 minutes.",
+                lastUpdated: "Aug 15, 2026"
+            },
+            {
+                id: "prudhvi",
+                name: "Prudhvi Teja - Demo",
+                initials: "PT",
+                grade: "6-A",
+                roll: "18",
+                bloodGroup: "B+",
+                contact: "+91 98123 45678 (Mother - Mrs. S. Teja)",
+                allergies: ["Dust", "Pollen"],
+                conditions: "None Reported",
+                instructions: "No daily medication needed. Basic first aid and rest permitted if feeling unwell.",
+                lastUpdated: "Jul 20, 2026"
+            },
+            {
+                id: "saiharshith",
+                name: "Sai Harshith - Demo",
+                initials: "SH",
+                grade: "6-B",
+                roll: "24",
+                bloodGroup: "A-",
+                contact: "+91 97654 32109 (Father - Mr. V. Harshith)",
+                allergies: ["Bee Stings"],
+                conditions: "Type 1 Diabetes",
+                instructions: "EpiPen kept in Nurse Cabinet B. Check glucose levels if student reports dizziness.",
+                lastUpdated: "Sep 01, 2026"
+            },
+            {
+                id: "chitraksh",
+                name: "Chitraksh - Demo",
+                initials: "CH",
+                grade: "6-B",
+                roll: "08",
+                bloodGroup: "AB+",
+                contact: "+91 96543 21098 (Mother - Mrs. A. Chitraksh)",
+                allergies: ["Lactose"],
+                conditions: "Migraines (Triggered by intense sunlight)",
+                instructions: "Allow 15-min rest in dark infirmary room during severe head pressure before contacting home.",
+                lastUpdated: "Oct 10, 2026"
+            }
+        ];
+
+        let currentStudentId = "kalash";
+
+        // Initialize Lucide Icons & Render Application
+        window.onload = function () {
+            lucide.createIcons();
+            renderStudentGrid(studentsData);
+            populateDropdowns();
+            loadStudentCard(currentStudentId);
+        };
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            ['screen1', 'screen2', 'screen3'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('border-teal-600', 'text-teal-600');
+                document.getElementById('tab-' + id).classList.add('border-transparent', 'text-slate-500');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('border-teal-600', 'text-teal-600');
+            document.getElementById('tab-' + tabId).classList.remove('border-transparent', 'text-slate-500');
+
+            // Re-render icons dynamically
+            setTimeout(() => lucide.createIcons(), 50);
+        }
+
+        // Render Screen 1 Student Grid
+        function renderStudentGrid(list) {
+            const grid = document.getElementById('studentGrid');
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-sm">No demo student matching your search query.</div>`;
+                return;
+            }
+
+            list.forEach(student => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between";
+                card.onclick = () => {
+                    loadStudentCard(student.id);
+                    switchTab('screen2');
+                };
+
+                const allergyBadges = student.allergies.map(a => `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">${a}</span>`).join(' ');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-teal-100 text-teal-800 rounded-full flex items-center justify-center font-bold text-sm">
+                                    ${student.initials}
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm sm:text-base">${student.name}</h3>
+                                    <p class="text-xs text-slate-500">Grade ${student.grade} • Roll ${student.roll}</p>
+                                </div>
+                            </div>
+                            <span class="bg-rose-100 text-rose-700 font-extrabold text-xs px-2 py-1 rounded">
+                                ${student.bloodGroup}
+                            </span>
+                        </div>
+                        <div class="space-y-1.5 text-xs text-slate-600 mt-2">
+                            <p class="truncate"><strong>Condition:</strong> ${student.conditions}</p>
+                            <div class="flex items-center gap-1">
+                                <strong class="text-xs">Alerts:</strong>
+                                <div class="flex flex-wrap gap-1">${allergyBadges || '<span class="text-slate-400">None</span>'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-teal-600 font-semibold">
+                        <span>View Health Passport</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Filter Students in Screen 1
+        function filterStudents() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = studentsData.filter(s =>
+                s.name.toLowerCase().includes(query) ||
+                s.grade.toLowerCase().includes(query) ||
+                s.conditions.toLowerCase().includes(query) ||
+                s.allergies.some(a => a.toLowerCase().includes(query))
+            );
+            renderStudentGrid(filtered);
+        }
+
+        // Populate Dropdowns in Screen 2 and Screen 3
+        function populateDropdowns() {
+            const cardSelect = document.getElementById('studentSelector');
+            const formSelect = document.getElementById('formStudentSelect');
+
+            cardSelect.innerHTML = '';
+            formSelect.innerHTML = '';
+
+            studentsData.forEach(student => {
+                const opt1 = document.createElement('option');
+                opt1.value = student.id;
+                opt1.textContent = student.name;
+                cardSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = student.id;
+                opt2.textContent = student.name;
+                formSelect.appendChild(opt2);
+            });
+        }
+
+        // Load Student Card into Screen 2
+        function loadStudentCard(id) {
+            currentStudentId = id;
+            const student = studentsData.find(s => s.id === id);
+            if (!student) return;
+
+            document.getElementById('studentSelector').value = id;
+            document.getElementById('cardInitials').textContent = student.initials;
+            document.getElementById('cardName').textContent = student.name;
+            document.getElementById('cardGrade').textContent = student.grade;
+            document.getElementById('cardRoll').textContent = student.roll;
+            document.getElementById('cardBloodGroup').textContent = student.bloodGroup;
+            document.getElementById('cardBloodGroupText').textContent = student.bloodGroup + " Verified";
+            document.getElementById('cardEmergencyContact').textContent = student.contact;
+            document.getElementById('cardConditions').textContent = student.conditions;
+            document.getElementById('cardInstructions').textContent = student.instructions;
+            document.getElementById('cardLastUpdated').textContent = student.lastUpdated;
+
+            // Render Allergies Badges
+            const allergyContainer = document.getElementById('cardAllergies');
+            allergyContainer.innerHTML = '';
+            if (student.allergies.length === 0 || student.allergies[0] === "None") {
+                allergyContainer.innerHTML = `<span class="text-slate-500 text-xs italic">No known allergies</span>`;
+            } else {
+                student.allergies.forEach(allergy => {
+                    const tag = document.createElement('span');
+                    tag.className = "bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1";
+                    tag.innerHTML = `<i data-lucide="alert-circle" class="w-3 h-3 text-amber-600"></i> ${allergy}`;
+                    allergyContainer.appendChild(tag);
+                });
+            }
+
+            // Sync form dropdown
+            document.getElementById('formStudentSelect').value = id;
+            populateFormFields(id);
+            lucide.createIcons();
+        }
+
+        // Edit Button Click (Navigates to Screen 3)
+        function editCurrentStudent() {
+            populateFormFields(currentStudentId);
+            switchTab('screen3');
+        }
+
+        // Populate Form Fields in Screen 3
+        function populateFormFields(id) {
+            const student = studentsData.find(s => s.id === id);
+            if (!student) return;
+
+            document.getElementById('formStudentSelect').value = id;
+            document.getElementById('formContact').value = student.contact;
+            document.getElementById('formBloodGroup').value = student.bloodGroup;
+            document.getElementById('formAllergies').value = student.allergies.join(', ');
+            document.getElementById('formConditions').value = student.conditions;
+            document.getElementById('formInstructions').value = student.instructions;
+        }
+
+        // Form Submit Handler
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const selectedId = document.getElementById('formStudentSelect').value;
+            const student = studentsData.find(s => s.id === selectedId);
+
+            if (student) {
+                student.contact = document.getElementById('formContact').value;
+                student.bloodGroup = document.getElementById('formBloodGroup').value;
+                student.allergies = document.getElementById('formAllergies').value.split(',').map(s => s.trim()).filter(Boolean);
+                student.conditions = document.getElementById('formConditions').value;
+                student.instructions = document.getElementById('formInstructions').value;
+
+                // Set today's date as last updated
+                const today = new Date();
+                student.lastUpdated = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                // Refresh UI
+                renderStudentGrid(studentsData);
+                loadStudentCard(selectedId);
+
+                // Show toast message
+                const toast = document.getElementById('toastMessage');
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 4000);
+
+                // Redirect to Screen 2 after short delay
+                setTimeout(() => switchTab('screen2'), 1000);
+            }
+        }
+    </script>
+</body>
+
+</html>
